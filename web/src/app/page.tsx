@@ -36,8 +36,8 @@ export default function Home() {
           <div className="hero__copy">
             <h1 className="hero__brand">DaveCoin</h1>
             <p className="hero__lede">
-              Fixed-supply DAVE on Solana — one billion tokens ≈ €1 notional
-              FDV. Treasury bridge ready for Dave&apos;s Palace.
+              Live on pump.fun — buy DAVE on Solana mainnet. Treasury bridge
+              ready for Dave&apos;s Palace.
             </p>
             <div className="hero__actions">
               {DAVE.buyUrl ? (
@@ -62,10 +62,10 @@ export default function Home() {
         </section>
 
         <section className="section" id="specs">
-          <h2>Built as SPL</h2>
+          <h2>Live on pump.fun</h2>
           <p>
-            DaveCoin ships as a standard Solana token. Create on Devnet first,
-            then promote the same flow to mainnet when you are ready.
+            Canonical mint on Solana mainnet. Buy on pump.fun, then deposit into
+            the treasury when you bridge to Dave&apos;s Palace.
           </p>
           <dl className="specs">
             <div>
@@ -77,16 +77,18 @@ export default function Home() {
               <dd>{DAVE.decimals}</dd>
             </div>
             <div>
-              <dt>Supply</dt>
-              <dd>{DAVE.totalSupplyUi.toLocaleString("en-US")}</dd>
+              <dt>Mint</dt>
+              <dd style={{ fontSize: "0.85rem", wordBreak: "break-all" }}>
+                {DAVE.mint.slice(0, 8)}…{DAVE.mint.slice(-6)}
+              </dd>
             </div>
             <div>
               <dt>Network</dt>
               <dd>{DAVE.cluster}</dd>
             </div>
             <div>
-              <dt>Notional FDV</dt>
-              <dd>≈ €1</dd>
+              <dt>Buy</dt>
+              <dd>pump.fun</dd>
             </div>
           </dl>
         </section>

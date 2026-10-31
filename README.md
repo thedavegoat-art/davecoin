@@ -1,6 +1,6 @@
 # DaveCoin (DAVE)
 
-Fixed-supply **SPL token** on **Solana**, demo site, and a **toy treasury** (deposit / withdraw) so projects like [Dave’s Palace](https://github.com/kyniops/Dave-s-Palace) can integrate later.
+Live **DaveCoin on [pump.fun](https://pump.fun/coin/jryXyEe7BPFxKze8bLJJSqbTWw464qgop8JfZUSpump)** + demo site + **treasury** (deposit / withdraw) so [Dave’s Palace](https://github.com/kyniops/Dave-s-Palace) can integrate later.
 
 ![DaveCoin](./assets/davecoin.png)
 
@@ -8,9 +8,9 @@ Fixed-supply **SPL token** on **Solana**, demo site, and a **toy treasury** (dep
 |--|--|
 | Name | DaveCoin |
 | Symbol | DAVE |
-| Decimals | 9 |
-| Supply | 1,000,000,000 (mint authority revoked after create) |
-| Notional FDV | **≈ €1** for the whole supply (`€1e-9` / DAVE) |
+| **Live mint** | `jryXyEe7BPFxKze8bLJJSqbTWw464qgop8JfZUSpump` |
+| Decimals | **6** |
+| Buy | [pump.fun](https://pump.fun/coin/jryXyEe7BPFxKze8bLJJSqbTWw464qgop8JfZUSpump) |
 | Repo | [thedavegoat-art/davecoin](https://github.com/thedavegoat-art/davecoin) |
 
 ## Structure
@@ -19,79 +19,45 @@ Fixed-supply **SPL token** on **Solana**, demo site, and a **toy treasury** (dep
 davecoin/
 ├── assets/
 ├── docs/
-│   ├── ECONOMICS.md      # why ≈ €1 FDV
-│   ├── INTEGRATION.md    # how Palace should call the treasury
+│   ├── PUMP.md           # canonical live token
+│   ├── ECONOMICS.md
+│   ├── INTEGRATION.md    # Palace bridge API
+│   ├── POOL.md           # optional post-graduation Raydium
 │   └── tokenomics.md
-├── token/                # create mint / airdrop / balance
-├── treasury/             # custodial ledger API (deposit / withdraw)
-└── web/                  # Next.js UI
+├── token/                # optional Devnet lab mint scripts
+├── treasury/             # custodial ledger API
+└── web/                  # Next.js UI (Buy → pump.fun)
 ```
 
-This repo stays **separate** from Dave’s Palace. Palace can copy the API contract in `docs/INTEGRATION.md`.
-
-## Setup
+## Quick start (site)
 
 ```bash
 npm install
-cp token/.env.example token/.env
-cp treasury/.env.example treasury/.env
 cp web/.env.example web/.env.local
-```
-
-## 1) Create the mint (Devnet)
-
-Fund deployer via https://faucet.solana.com if RPC airdrop is closed, then:
-
-```bash
-npm run token:create
-```
-
-Set in `web/.env.local`:
-
-```env
-NEXT_PUBLIC_DAVE_MINT=<mint>
-NEXT_PUBLIC_SOLANA_CLUSTER=devnet
-NEXT_PUBLIC_TREASURY_URL=http://localhost:8787
-```
-
-## 2) Fund the treasury + run API
-
-```bash
-npm run treasury:fund -- 100000000
-npm run treasury:dev
-```
-
-## 3) Web UI
-
-```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) → connect wallet → **Treasury** section to deposit / withdraw.
+Open [http://localhost:3000](http://localhost:3000) → **Buy DAVE** opens pump.fun.  
+Phantom must be on **Mainnet**.
 
-## Economics
-
-See [`docs/ECONOMICS.md`](./docs/ECONOMICS.md): **1B DAVE ≈ €1** total. Ledger is **1 credit = 1 DAVE**.
-
-## Buy DAVE (micro-pool)
-
-There is no market until you create a tiny DEX pool. Full checklist:
-
-→ [`docs/POOL.md`](./docs/POOL.md)
+## Treasury (Palace bridge)
 
 ```bash
-npm run pool:calc -- 150
-# → SOL to deposit if 1 SOL = €150 (≈ €1 FDV, 40% in pool)
+cp treasury/.env.example treasury/.env
+npm run treasury:dev
 ```
 
-Then create the pool on **Raydium Mainnet**, and buy via Jupiter / the site **Buy DAVE** button.
-
-## Palace integration
+Fund the treasury wallet with live DAVE (bought on pump), then deposit/withdraw from the site.
 
 See [`docs/INTEGRATION.md`](./docs/INTEGRATION.md).
+
+## Lab Devnet mint (optional)
+
+`npm run token:create` still works for a **separate** 9-decimal test mint.  
+Do **not** confuse it with the live pump mint. Details: [`docs/PUMP.md`](./docs/PUMP.md).
 
 ## Security
 
 - Never commit `token/.keys/`, `treasury/.keys/`, `treasury/data/`, or secrets  
-- Treasury secret key must stay on a private server (not GitHub Pages)  
-- Toy valuation — not financial advice, not a production casino custody stack
+- Treasury secret key stays on a private server  
+- Not financial advice — meme / game bridge token

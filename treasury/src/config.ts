@@ -16,7 +16,7 @@ const TOKEN_KEYS = join(TREASURY_ROOT, "..", "token", ".keys");
 export type ClusterName = "devnet" | "mainnet-beta" | "localnet";
 
 export function getCluster(): ClusterName {
-  const value = (process.env.SOLANA_CLUSTER ?? "devnet") as ClusterName;
+  const value = (process.env.SOLANA_CLUSTER ?? "mainnet-beta") as ClusterName;
   if (!["devnet", "mainnet-beta", "localnet"].includes(value)) {
     throw new Error(`Invalid SOLANA_CLUSTER: ${value}`);
   }
@@ -64,13 +64,16 @@ export function getTreasuryKeypair(): Keypair {
   return loadOrCreateLocalKey("treasury");
 }
 
-/** Prefer mint from env, else token/deployments/<cluster>.json */
+/** Prefer env → economics default (pump) → deployments JSON */
 export function getMint(): PublicKey {
   if (process.env.DAVE_MINT) return new PublicKey(process.env.DAVE_MINT);
-  const path = join(TOKEN_DEPLOYMENTS, `${getCluster()}.json`);
+  if (ECONOMICS.mint) return new PublicKey(ECONOMICS.mint);
+  const pumpPath = join(TOKEN_DEPLOYMENTS, "mainnet-pump.json");
+  const clusterPath = join(TOKEN_DEPLOYMENTS, `${getCluster()}.json`);
+  const path = existsSync(pumpPath) ? pumpPath : clusterPath;
   if (!existsSync(path)) {
     throw new Error(
-      `No mint configured. Set DAVE_MINT or run npm run token:create (${path} missing)`,
+      `No mint configured. Set DAVE_MINT or add token/deployments/mainnet-pump.json`,
     );
   }
   const deployment = JSON.parse(readFileSync(path, "utf8")) as { mint: string };
@@ -96,6 +99,7 @@ export function publicConfig(treasuryAta: string) {
     treasury,
     treasuryAta,
     creditsPerDave: ECONOMICS.creditsPerDave,
-    note: "Entire supply notional FDV ≈ €1. Toy treasury for Palace bridge.",
+    buyUrl: ECONOMICS.buyUrl,
+    note: "Live mint = pump.fun DaveCoin. Treasury is a custodial bridge for Palace.",
   };
 }

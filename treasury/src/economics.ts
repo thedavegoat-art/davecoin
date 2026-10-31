@@ -1,14 +1,17 @@
-/** Entire supply notionally ≈ €1 */
+/** Defaults match live pump.fun DaveCoin (6 decimals). Override via env. */
 export const ECONOMICS = {
   name: "DaveCoin",
   symbol: "DAVE",
-  decimals: 9,
+  decimals: Number(process.env.DAVE_DECIMALS ?? 6),
   totalSupplyUi: 1_000_000_000,
-  notionalFdvEur: 1,
-  /** EUR per 1 DAVE (UI unit) */
-  eurPerDave: 1e-9,
-  /** 1 ledger credit = 1 DAVE */
+  /** Informal display only — live FDV is market-driven on pump.fun */
+  notionalFdvEur: Number(process.env.NOTIONAL_FDV_EUR ?? 0),
+  eurPerDave: Number(process.env.EUR_PER_DAVE ?? 0),
   creditsPerDave: 1,
+  mint: process.env.DAVE_MINT ?? "jryXyEe7BPFxKze8bLJJSqbTWw464qgop8JfZUSpump",
+  buyUrl:
+    process.env.BUY_URL ??
+    "https://pump.fun/coin/jryXyEe7BPFxKze8bLJJSqbTWw464qgop8JfZUSpump",
 } as const;
 
 export function eurNotional(daveUi: number): number {
@@ -16,6 +19,7 @@ export function eurNotional(daveUi: number): number {
 }
 
 export function formatEur(daveUi: number): string {
+  if (!(ECONOMICS.eurPerDave > 0)) return "market-priced (pump.fun)";
   const eur = eurNotional(daveUi);
   if (eur < 0.01) return `≈ €${eur.toExponential(2)}`;
   return `≈ €${eur.toFixed(4)}`;

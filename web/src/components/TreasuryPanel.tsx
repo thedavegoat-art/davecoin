@@ -143,18 +143,28 @@ export function TreasuryPanel() {
       <div className="wallet-panel__head">
         <h2>Treasury bridge</h2>
         <p>
-          Deposit SPL DAVE → ledger credits (1:1). Whole supply ≈ €1 FDV —
-          toy economy for Dave&apos;s Palace later.
+          Deposit live pump.fun DAVE → ledger credits (1:1) for Dave&apos;s
+          Palace later. Buy first on pump if your wallet is empty.
         </p>
       </div>
 
       {config ? (
         <div className="wallet-panel__balance">
-          <span>Notional FDV</span>
-          <strong>€{config.notionalFdvEur.toFixed(2)} / 1B DAVE</strong>
+          <span>Live mint</span>
+          <strong style={{ fontSize: "1rem", wordBreak: "break-all" }}>
+            {config.mint}
+          </strong>
           <span>
-            ≈ €{config.eurPerDave.toExponential(0)} per DAVE · cluster{" "}
-            {config.cluster}
+            {config.decimals} decimals · {config.cluster}
+            {config.buyUrl ? (
+              <>
+                {" "}
+                ·{" "}
+                <a href={config.buyUrl} target="_blank" rel="noreferrer">
+                  Buy on pump.fun
+                </a>
+              </>
+            ) : null}
           </span>
         </div>
       ) : (

@@ -1,7 +1,7 @@
-# Acheter du DaveCoin — micro-pool (~€1 FDV)
+# Raydium micro-pool (optionnel, post-pump)
 
-Sans pool DEX, **personne ne peut acheter** DAVE.  
-Ce guide crée un marché minuscule : **toute la supply ≈ €1**.
+**Achat live = [pump.fun](https://pump.fun/coin/jryXyEe7BPFxKze8bLJJSqbTWw464qgop8JfZUSpump).**  
+Ce guide ne sert que si le coin **graduate** et que tu veux gérer / ajouter de la liquidité Raydium toi-même.
 
 ## Chiffres cibles
 

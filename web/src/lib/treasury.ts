@@ -11,6 +11,7 @@ export type TreasuryConfig = {
   totalSupplyUi: number;
   notionalFdvEur: number;
   eurPerDave: number;
+  buyUrl?: string;
   note: string;
 };
 

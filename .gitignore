@@ -12,7 +12,10 @@ coverage/
 .token-keypair.json
 .mint-authority.json
 token/.keys/
-token/deployments/
+# Keep public mint refs; ignore local lab deployment dumps with keys refs
+token/deployments/devnet.json
+token/deployments/mainnet-beta.json
+token/deployments/localnet.json
 treasury/.keys/
 treasury/data/
 .anchor/

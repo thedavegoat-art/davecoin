@@ -15,7 +15,8 @@ play DaveCoins ─cashout► ledger  ──withdraw──►   SPL DAVE
 - Treasury ledger = custodial balance (same unit: 1 credit = 1 DAVE)  
 - Palace play balance can stay 1:1 with ledger credits (recommended)
 
-Notional value of **all** DAVE ≈ **€1** (see `ECONOMICS.md`).
+**Live mint** = pump.fun `jryXyEe7BPFxKze8bLJJSqbTWw464qgop8JfZUSpump` (**6 decimals**).  
+See `PUMP.md`. Price is market-driven.
 
 ## API (treasury server)
 
