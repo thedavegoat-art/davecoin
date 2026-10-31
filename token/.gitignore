@@ -1,4 +1,5 @@
 .keys/
-deployments/
+deployments/*
+!deployments/mainnet-pump.json
 .env
 *.log

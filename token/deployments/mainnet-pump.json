@@ -1,0 +1,12 @@
+{
+  "name": "DaveCoin",
+  "symbol": "DAVE",
+  "decimals": 6,
+  "totalSupplyUi": "1000000000",
+  "mint": "jryXyEe7BPFxKze8bLJJSqbTWw464qgop8JfZUSpump",
+  "cluster": "mainnet-beta",
+  "launchpad": "pump.fun",
+  "buyUrl": "https://pump.fun/coin/jryXyEe7BPFxKze8bLJJSqbTWw464qgop8JfZUSpump",
+  "creatorWallet": "CvPm2ANrGoTwfxPc4WAkzZ2j7gQdNHfVbE1eFzurk8LS",
+  "note": "Canonical live DaveCoin. Custom Devnet mints in this repo are for lab/treasury testing only."
+}
