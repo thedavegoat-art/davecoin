@@ -1,0 +1,4 @@
+.keys/
+deployments/
+.env
+*.log
