@@ -1,6 +1,6 @@
 # DaveCoin (DAVE)
 
-Fixed-supply **SPL token** on **Solana**, plus a Next.js site to connect a wallet, check balance, and send DAVE.
+Fixed-supply **SPL token** on **Solana**, demo site, and a **toy treasury** (deposit / withdraw) so projects like [Dave’s Palace](https://github.com/kyniops/Dave-s-Palace) can integrate later.
 
 ![DaveCoin](./assets/davecoin.png)
 
@@ -10,87 +10,75 @@ Fixed-supply **SPL token** on **Solana**, plus a Next.js site to connect a walle
 | Symbol | DAVE |
 | Decimals | 9 |
 | Supply | 1,000,000,000 (mint authority revoked after create) |
+| Notional FDV | **≈ €1** for the whole supply (`€1e-9` / DAVE) |
 | Repo | [thedavegoat-art/davecoin](https://github.com/thedavegoat-art/davecoin) |
 
 ## Structure
 
 ```
 davecoin/
-├── assets/          # Brand (coin image)
-├── docs/            # Tokenomics
-├── token/           # Create mint / airdrop / balance scripts
-└── web/             # Next.js landing + wallet UI
+├── assets/
+├── docs/
+│   ├── ECONOMICS.md      # why ≈ €1 FDV
+│   ├── INTEGRATION.md    # how Palace should call the treasury
+│   └── tokenomics.md
+├── token/                # create mint / airdrop / balance
+├── treasury/             # custodial ledger API (deposit / withdraw)
+└── web/                  # Next.js UI
 ```
 
-## Prerequisites
-
-- Node.js 20+
-- A Solana wallet (Phantom / Solflare) for the web app
-- Devnet SOL for the deployer (script can airdrop on Devnet)
+This repo stays **separate** from Dave’s Palace. Palace can copy the API contract in `docs/INTEGRATION.md`.
 
 ## Setup
 
 ```bash
 npm install
 cp token/.env.example token/.env
+cp treasury/.env.example treasury/.env
 cp web/.env.example web/.env.local
 ```
 
-## Create the mint (Devnet)
+## 1) Create the mint (Devnet)
+
+Fund deployer via https://faucet.solana.com if RPC airdrop is closed, then:
 
 ```bash
 npm run token:create
 ```
 
-This will:
-
-1. Create (or reuse) a deployer keypair in `token/.keys/`
-2. Create the DAVE mint
-3. Mint the full supply to the deployer ATA
-4. **Revoke mint authority** (fixed supply)
-5. Write `token/deployments/devnet.json`
-
-Copy the `mint` address into `web/.env.local`:
+Set in `web/.env.local`:
 
 ```env
-NEXT_PUBLIC_DAVE_MINT=<mint from deployments/devnet.json>
+NEXT_PUBLIC_DAVE_MINT=<mint>
 NEXT_PUBLIC_SOLANA_CLUSTER=devnet
+NEXT_PUBLIC_TREASURY_URL=http://localhost:8787
 ```
 
-### Airdrop test tokens
+## 2) Fund the treasury + run API
 
 ```bash
-npm run token:airdrop -- <RECIPIENT_PUBKEY> 1000
+npm run treasury:fund -- 100000000
+npm run treasury:dev
 ```
 
-### Check balance
-
-```bash
-npm run balance --workspace=token
-# or
-npm run balance --workspace=token -- <PUBKEY>
-```
-
-## Web app
+## 3) Web UI
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000) → connect wallet → **Treasury** section to deposit / withdraw.
 
-## Mainnet
+## Economics
 
-1. Fund the deployer with real SOL  
-2. Set `SOLANA_CLUSTER=mainnet-beta` (and ideally a private RPC)  
-3. Use **fresh** keys under `token/.keys/` (or a dedicated mainnet folder)  
-4. Run `npm run token:create` again  
-5. Point `NEXT_PUBLIC_*` at mainnet + the new mint  
+See [`docs/ECONOMICS.md`](./docs/ECONOMICS.md): **1B DAVE ≈ €1** total. Ledger is **1 credit = 1 DAVE**.
 
-**Never commit** `token/.keys/`, `.env`, or secret key material.
+## Palace integration
 
-## Security notes
+See [`docs/INTEGRATION.md`](./docs/INTEGRATION.md).
 
-- DaveCoin v1 is a standard SPL mint + UI — not a custom L1
-- Revoking mint authority does not protect against scams, fake mints, or phishing
-- This project is software, not financial advice
+## Security
+
+- Never commit `token/.keys/`, `treasury/.keys/`, `treasury/data/`, or secrets  
+- Treasury secret key must stay on a private server (not GitHub Pages)  
+- Toy valuation — not financial advice, not a production casino custody stack

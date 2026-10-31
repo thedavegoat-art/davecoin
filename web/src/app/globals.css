@@ -327,6 +327,13 @@ code {
   cursor: wait;
 }
 
+.treasury-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  margin-top: 0.5rem;
+}
+
 .site-footer {
   padding: 2rem 1.5rem 3rem;
   color: var(--ink-muted);

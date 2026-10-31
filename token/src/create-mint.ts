@@ -37,11 +37,22 @@ async function main() {
   if (balance < 0.05 * 1e9) {
     if (cluster === "devnet") {
       console.log("Requesting SOL airdrop for deployer...");
-      const sig = await connection.requestAirdrop(
-        deployer.publicKey,
-        1 * 1e9,
-      );
-      await connection.confirmTransaction(sig, "confirmed");
+      try {
+        const sig = await connection.requestAirdrop(
+          deployer.publicKey,
+          1 * 1e9,
+        );
+        await connection.confirmTransaction(sig, "confirmed");
+      } catch {
+        throw new Error(
+          [
+            "Devnet RPC faucet is closed.",
+            `1) Open https://faucet.solana.com`,
+            `2) Paste deployer: ${deployer.publicKey.toBase58()}`,
+            `3) Request Devnet SOL, wait ~30s, then re-run: npm run token:create`,
+          ].join("\n"),
+        );
+      }
     } else {
       throw new Error(
         `Deployer needs SOL. Balance: ${balance / 1e9}. Fund ${deployer.publicKey.toBase58()}`,

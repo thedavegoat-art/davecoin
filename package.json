@@ -5,11 +5,15 @@
   "description": "DaveCoin (DAVE) — SPL token on Solana",
   "workspaces": [
     "token",
+    "treasury",
     "web"
   ],
   "scripts": {
     "token:create": "npm run create --workspace=token",
     "token:airdrop": "npm run airdrop --workspace=token",
+    "treasury:dev": "npm run dev --workspace=treasury",
+    "treasury:start": "npm run start --workspace=treasury",
+    "treasury:fund": "npm run fund --workspace=treasury",
     "dev": "npm run dev --workspace=web",
     "build": "npm run build --workspace=web",
     "lint": "npm run lint --workspace=web"

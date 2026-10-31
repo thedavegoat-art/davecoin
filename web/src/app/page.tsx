@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { TreasuryPanel } from "@/components/TreasuryPanel";
 import { WalletPanel } from "@/components/WalletPanel";
 import { DAVE } from "@/lib/token";
 
@@ -7,9 +8,17 @@ export default function Home() {
     <>
       <header className="site-header">
         <span className="brand-mark">DaveCoin</span>
-        <a className="nav-link" href="#wallet">
-          Wallet
-        </a>
+        <nav style={{ display: "flex", gap: "1.25rem" }}>
+          <a className="nav-link" href="#specs">
+            Specs
+          </a>
+          <a className="nav-link" href="#wallet">
+            Wallet
+          </a>
+          <a className="nav-link" href="#treasury">
+            Treasury
+          </a>
+        </nav>
       </header>
 
       <main>
@@ -27,8 +36,8 @@ export default function Home() {
           <div className="hero__copy">
             <h1 className="hero__brand">DaveCoin</h1>
             <p className="hero__lede">
-              Fixed-supply DAVE on Solana — one billion tokens, mint authority
-              burned at create.
+              Fixed-supply DAVE on Solana — one billion tokens ≈ €1 notional
+              FDV. Treasury bridge ready for Dave&apos;s Palace.
             </p>
             <div className="hero__actions">
               <a className="btn btn--primary" href="#wallet">
@@ -64,11 +73,19 @@ export default function Home() {
               <dt>Network</dt>
               <dd>{DAVE.cluster}</dd>
             </div>
+            <div>
+              <dt>Notional FDV</dt>
+              <dd>≈ €1</dd>
+            </div>
           </dl>
         </section>
 
         <div className="section wallet-panel">
           <WalletPanel />
+        </div>
+
+        <div className="section">
+          <TreasuryPanel />
         </div>
       </main>
 

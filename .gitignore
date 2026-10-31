@@ -13,6 +13,8 @@ coverage/
 .mint-authority.json
 token/.keys/
 token/deployments/
+treasury/.keys/
+treasury/data/
 .anchor/
 target/
 test-ledger/
