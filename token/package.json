@@ -6,7 +6,8 @@
   "scripts": {
     "create": "tsx src/create-mint.ts",
     "airdrop": "tsx src/airdrop.ts",
-    "balance": "tsx src/balance.ts"
+    "balance": "tsx src/balance.ts",
+    "pool-calc": "tsx src/pool-calc.ts"
   },
   "dependencies": {
     "@solana/spl-token": "^0.4.13",

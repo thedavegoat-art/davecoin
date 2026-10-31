@@ -40,11 +40,22 @@ export default function Home() {
               FDV. Treasury bridge ready for Dave&apos;s Palace.
             </p>
             <div className="hero__actions">
-              <a className="btn btn--primary" href="#wallet">
-                Connect wallet
-              </a>
-              <a className="btn btn--ghost" href="#specs">
-                Token specs
+              {DAVE.buyUrl ? (
+                <a
+                  className="btn btn--primary"
+                  href={DAVE.buyUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Buy DAVE
+                </a>
+              ) : (
+                <a className="btn btn--primary" href="#wallet">
+                  Connect wallet
+                </a>
+              )}
+              <a className="btn btn--ghost" href="#treasury">
+                Treasury
               </a>
             </div>
           </div>

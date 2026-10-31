@@ -10,6 +10,12 @@ export const DAVE = {
     | "localnet",
   rpcUrl: process.env.NEXT_PUBLIC_SOLANA_RPC_URL,
   totalSupplyUi: 1_000_000_000,
+  /** Jupiter (or other) swap URL after the micro-pool exists */
+  buyUrl:
+    process.env.NEXT_PUBLIC_BUY_URL ||
+    (process.env.NEXT_PUBLIC_DAVE_MINT
+      ? `https://jup.ag/swap/SOL-${process.env.NEXT_PUBLIC_DAVE_MINT}`
+      : ""),
 } as const;
 
 export function explorerAddressUrl(address: string): string {

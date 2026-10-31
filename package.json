@@ -11,6 +11,7 @@
   "scripts": {
     "token:create": "npm run create --workspace=token",
     "token:airdrop": "npm run airdrop --workspace=token",
+    "pool:calc": "npm run pool-calc --workspace=token",
     "treasury:dev": "npm run dev --workspace=treasury",
     "treasury:start": "npm run start --workspace=treasury",
     "treasury:fund": "npm run fund --workspace=treasury",

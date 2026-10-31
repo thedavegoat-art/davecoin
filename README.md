@@ -73,6 +73,19 @@ Open [http://localhost:3000](http://localhost:3000) → connect wallet → **Tre
 
 See [`docs/ECONOMICS.md`](./docs/ECONOMICS.md): **1B DAVE ≈ €1** total. Ledger is **1 credit = 1 DAVE**.
 
+## Buy DAVE (micro-pool)
+
+There is no market until you create a tiny DEX pool. Full checklist:
+
+→ [`docs/POOL.md`](./docs/POOL.md)
+
+```bash
+npm run pool:calc -- 150
+# → SOL to deposit if 1 SOL = €150 (≈ €1 FDV, 40% in pool)
+```
+
+Then create the pool on **Raydium Mainnet**, and buy via Jupiter / the site **Buy DAVE** button.
+
 ## Palace integration
 
 See [`docs/INTEGRATION.md`](./docs/INTEGRATION.md).
