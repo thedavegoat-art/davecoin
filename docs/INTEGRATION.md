@@ -1,64 +1,69 @@
 # Integrating DaveCoin into Dave’s Palace (for kyniops)
 
-This repo stays **separate**. Palace can call the **Treasury API** instead of inventing custody.
+**Start here (FR) :** [`PALACE_BRIEF_FR.md`](./PALACE_BRIEF_FR.md)  
+**Drop-in pack :** [`integrations/daves-palace/`](../integrations/daves-palace/)
+
+This repo stays **separate**. Palace copies the bridge script and calls the **Treasury API**.
 
 ## Mental model
 
 ```
-Phantom wallet          Treasury API              Palace (casino)
-──────────────          ────────────              ───────────────
-SPL DAVE  ──deposit──►  ledger credits  ──sync──►  play DaveCoins
-play DaveCoins ─cashout► ledger  ──withdraw──►   SPL DAVE
+Phantom                pump.fun              Treasury API           Palace
+────────               ────────              ────────────           ──────
+Connect  →  Buy DAVE  →  hold SPL  →  Deposit → ledger  →  DP.wallet.credit (1:1)
+Play balance  →  Withdraw (sign)  →  SPL back to Phantom
 ```
 
-- On-chain token = real SPL DAVE  
-- Treasury ledger = custodial balance (same unit: 1 credit = 1 DAVE)  
-- Palace play balance can stay 1:1 with ledger credits (recommended)
+| | |
+|--|--|
+| Live mint | `jryXyEe7BPFxKze8bLJJSqbTWw464qgop8JfZUSpump` |
+| Decimals | **6** |
+| Buy | https://pump.fun/coin/jryXyEe7BPFxKze8bLJJSqbTWw464qgop8JfZUSpump |
 
-**Live mint** = pump.fun `jryXyEe7BPFxKze8bLJJSqbTWw464qgop8JfZUSpump` (**6 decimals**).  
-See `PUMP.md`. Price is market-driven.
-
-## API (treasury server)
+## Treasury HTTP API
 
 Base URL example: `https://treasury.example.com`
 
 | Method | Path | Purpose |
 |--------|------|---------|
 | GET | `/health` | Liveness |
-| GET | `/config` | mint, treasury owner, decimals, EUR notional |
-| GET | `/balance/:wallet` | Ledger credits for a Solana pubkey |
-| POST | `/deposit/confirm` | `{ wallet, signature }` — verify SPL transfer to treasury, credit ledger |
-| POST | `/withdraw` | Signed withdraw request — debit ledger, send SPL |
+| GET | `/config` | mint, treasury, treasuryAta, decimals, buyUrl |
+| GET | `/balance/:wallet` | Ledger credits |
+| POST | `/deposit/confirm` | `{ wallet, signature }` after SPL transfer to treasury |
+| POST | `/withdraw/prepare` | `{ wallet, amount }` → message to sign |
+| POST | `/withdraw` | `{ wallet, amount, nonce, issuedAt, signature }` |
 
-### Deposit flow (Palace)
+### Deposit (Palace)
 
-1. Show treasury ATA from `GET /config` → `treasuryAta`  
-2. User sends DAVE (SPL) from Phantom to that ATA  
-3. Palace (or this demo UI) posts the tx signature to `/deposit/confirm`  
-4. Read `GET /balance/:wallet` and set / top-up `davecoin_<user>` (or cloud save)
+1. `DaveBridge.deposit(amount)` (handles transfer + confirm)  
+2. `DP.wallet.credit(credited)`  
+3. Optional `DP.cloud.pushNow()`
 
-### Withdraw flow (Palace)
+### Withdraw (Palace)
 
-1. Debit play balance first (or lock it)  
-2. Ask wallet to `signMessage` the withdraw payload (see server)  
-3. `POST /withdraw`  
-4. On success, play balance already matches; show explorer link
+1. `DP.wallet.place(amount)` first  
+2. `DaveBridge.withdraw(amount)`  
+3. On API failure → `DP.wallet.credit(amount)` to refund play balance
 
 ### Auth
 
-Withdraw messages are **ed25519** signatures over a UTF-8 payload from the user’s Solana wallet.
-No email password on the treasury — the wallet is the account id.
+Withdraw = ed25519 `signMessage` over the UTF-8 payload from `/withdraw/prepare`.  
+Wallet pubkey is the account id.
 
-## Security notes for Palace
+## Security
 
-- Run treasury on a **private host** (Railway, Fly, VPS). Never put the treasury secret key in the static GitHub Pages site.  
-- Fund treasury with only the DAVE you are willing to lose (toy € economy).  
-- Add your own rate limits / KYC / geo rules if you ever leave “fun toy” territory.  
-- This is software scaffolding, not legal advice.
+- Treasury **secret key** only on a private host (Railway / Fly / VPS) — never GitHub Pages  
+- Restrict CORS to Palace origins  
+- Fund treasury with only the DAVE float you accept to lose  
+- Not legal / financial advice
 
-## Devnet checklist
+## Ops deploy (treasury)
 
-1. `npm run token:create`  
-2. Fund treasury: `npm run treasury:fund -- 100000000`  
-3. `npm run treasury:dev`  
-4. Point Palace (or the DaveCoin web UI) at `NEXT_PUBLIC_TREASURY_URL=http://localhost:8787`
+```bash
+cd treasury
+cp .env.example .env
+# set DAVE_MINT, DAVE_DECIMALS=6, SOLANA_CLUSTER=mainnet-beta, TREASURY_SECRET_KEY
+npm run start
+```
+
+Buy DAVE on pump → send some to the treasury wallet ATA → players can withdraw.

@@ -1,0 +1,101 @@
+<!--
+  À coller dans le dashboard / boutique Dave's Palace.
+  Dépend de js/dave-bridge.js + window.DAVE_BRIDGE / window.solana (Phantom).
+-->
+<section id="dave-onchain" class="dave-onchain" style="max-width:28rem;margin:1.5rem 0;padding:1rem 0;border-top:1px solid rgba(255,255,255,.12)">
+  <h2 style="margin:0 0 .4rem;font-size:1.25rem">DaveCoin on-chain</h2>
+  <p style="margin:0 0 1rem;opacity:.75;font-size:.95rem">
+    Achète sur pump.fun, dépose ici → crédité sur ton compte Palace (1:1).
+  </p>
+
+  <div style="display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:.85rem">
+    <button type="button" id="dave-connect">Connecter Phantom</button>
+    <a id="dave-buy" href="https://pump.fun/coin/jryXyEe7BPFxKze8bLJJSqbTWw464qgop8JfZUSpump" target="_blank" rel="noreferrer">
+      Acheter DAVE
+    </a>
+  </div>
+
+  <p id="dave-wallet-label" style="font-size:.85rem;opacity:.8;word-break:break-all">Wallet : —</p>
+  <p id="dave-balances" style="font-size:.95rem">On-chain : — · Ledger : — · Jeu : —</p>
+
+  <label style="display:block;margin:.75rem 0 .35rem;font-size:.85rem">Montant DAVE</label>
+  <input id="dave-amount" type="number" min="0" step="any" value="100" style="width:100%;min-height:2.4rem;padding:.4rem .6rem" />
+
+  <div style="display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.75rem">
+    <button type="button" id="dave-deposit">Déposer → crédit Palace</button>
+    <button type="button" id="dave-withdraw">Retirer → Phantom</button>
+    <button type="button" id="dave-refresh">Rafraîchir</button>
+  </div>
+
+  <p id="dave-status" style="margin-top:.85rem;font-size:.9rem;opacity:.85"></p>
+</section>
+
+<script>
+(function wireDaveOnchainPanel() {
+  const $ = (id) => document.getElementById(id);
+  const status = (msg) => { const n = $("dave-status"); if (n) n.textContent = msg || ""; };
+
+  async function refresh() {
+    if (!window.DaveBridge) return;
+    try {
+      const snap = await DaveBridge.snapshot();
+      const play = (window.DP && DP.wallet) ? DP.wallet.get() : null;
+      $("dave-wallet-label").textContent = snap.wallet
+        ? ("Wallet : " + snap.wallet)
+        : "Wallet : non connecté";
+      $("dave-balances").textContent =
+        "On-chain : " + (snap.onChain ?? "—") +
+        " · Ledger : " + (snap.ledger ?? "—") +
+        " · Jeu : " + (play == null ? "—" : play);
+    } catch (e) {
+      status(e.message || String(e));
+    }
+  }
+
+  $("dave-connect")?.addEventListener("click", async () => {
+    try {
+      await DaveBridge.connect();
+      status("Phantom connecté");
+      await refresh();
+    } catch (e) { status(e.message || String(e)); }
+  });
+
+  $("dave-refresh")?.addEventListener("click", () => refresh());
+
+  $("dave-deposit")?.addEventListener("click", async () => {
+    const amount = Number($("dave-amount").value);
+    try {
+      status("Dépôt en cours…");
+      const res = await DaveBridge.deposit(amount);
+      if (window.DP && DP.wallet) {
+        DP.wallet.credit(res.credited);
+        if (DP.cloud && DP.cloud.pushNow) DP.cloud.pushNow();
+        if (DP.ui && DP.ui.toast) DP.ui.toast("+" + res.credited + " DaveCoins", "win");
+      }
+      status("Déposé " + res.credited + " DAVE → compte crédité");
+      await refresh();
+    } catch (e) { status(e.message || String(e)); }
+  });
+
+  $("dave-withdraw")?.addEventListener("click", async () => {
+    const amount = Number($("dave-amount").value);
+    try {
+      if (window.DP && DP.wallet) {
+        if (!DP.wallet.place(amount)) return;
+      }
+      status("Retrait en cours…");
+      const res = await DaveBridge.withdraw(amount);
+      if (window.DP && DP.cloud && DP.cloud.pushNow) DP.cloud.pushNow();
+      if (window.DP && DP.ui && DP.ui.toast) DP.ui.toast("Retrait " + res.withdrawn + " DAVE", "win");
+      status("Retiré " + res.withdrawn + " DAVE · tx " + (res.signature || "").slice(0, 8) + "…");
+      await refresh();
+    } catch (e) {
+      // rembourse le débit jeu si l'API a échoué après place()
+      if (window.DP && DP.wallet) DP.wallet.credit(amount);
+      status(e.message || String(e));
+    }
+  });
+
+  refresh();
+})();
+</script>

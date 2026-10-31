@@ -49,7 +49,13 @@ npm run treasury:dev
 
 Fund the treasury wallet with live DAVE (bought on pump), then deposit/withdraw from the site.
 
-See [`docs/INTEGRATION.md`](./docs/INTEGRATION.md).
+### Pour kyniops (Dave’s Palace)
+
+Pack prêt à coller :
+
+→ [`integrations/daves-palace/`](./integrations/daves-palace/)  
+→ Brief FR : [`docs/PALACE_BRIEF_FR.md`](./docs/PALACE_BRIEF_FR.md)  
+→ API : [`docs/INTEGRATION.md`](./docs/INTEGRATION.md)
 
 ## Lab Devnet mint (optional)
 

@@ -30,7 +30,15 @@ import {
 } from "./solana.js";
 
 const app = express();
-app.use(cors());
+const corsOrigins = (process.env.CORS_ORIGINS || "")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+app.use(
+  cors({
+    origin: corsOrigins.length ? corsOrigins : true,
+  }),
+);
 app.use(express.json({ limit: "32kb" }));
 
 function mintPk() {
